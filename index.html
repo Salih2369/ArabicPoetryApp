@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>الباحث الشعري | الرئيسي</title>
+    <style>
+        :root { --primary-dark: #1a252f; --accent-pink: #e73c7e; --glass-bg: rgba(255, 255, 255, 0.9); }
+        
+        body { 
+            margin: 0; 
+            font-family: 'Cairo', sans-serif; 
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); 
+            background-size: 400% 400%; 
+            animation: gradientBG 15s ease infinite; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden; 
+            position: relative; 
+        }
+
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* الأيقونات العائمة */
+        .floating-icons i { position: absolute; color: rgba(255, 255, 255, 0.2); animation: floatUp 25s linear infinite; z-index: 0; transition: transform 0.2s ease-out; }
+        @keyframes floatUp { from { transform: translateY(110vh) rotate(0deg); opacity: 0; } 20% { opacity: 1; } to { transform: translateY(-10vh) rotate(360deg); opacity: 0; } }
+
+        /* تعديل الصندوق الأبيض وإعادة تفعيل الهوفر */
+        .search-card { 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(20px); 
+            padding: 4.5rem 3.5rem; 
+            border-radius: 40px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15); 
+            border: 1px solid rgba(255,255,255,0.4); 
+            text-align: center; 
+            max-width: 850px; 
+            width: 90%; 
+            z-index: 10; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* حركة انسيابية */
+            cursor: pointer;
+        }
+
+        /* تأثير الهوفر المفعّل */
+        .search-card:hover { 
+            transform: translateY(-15px) scale(1.02); 
+            box-shadow: 0 45px 80px rgba(0,0,0,0.25);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .main-icon { font-size: 4.5rem; color: var(--primary-dark); margin-bottom: 1.5rem; transition: transform 0.3s; }
+        .search-card:hover .main-icon { transform: rotate(-10deg) scale(1.1); } /* حركة إضافية للأيقونة */
+
+        h1 { font-weight: 900; color: var(--primary-dark); font-size: 3rem; margin-bottom: 1.5rem; }
+        .typewriter { font-size: 1.3rem; color: #555; min-height: 1.6rem; margin-bottom: 2.5rem; font-weight: 600; }
+
+        .search-box { position: relative; max-width: 700px; margin: 0 auto; }
+        .form-control { border-radius: 50px; padding: 1.4rem 2.5rem; border: 2px solid transparent; font-size: 1.25rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; transition: 0.3s; }
+        .form-control:focus { border-color: var(--accent-pink); box-shadow: 0 0 25px rgba(231, 60, 126, 0.2); outline: none; }
+
+        .btn-search { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: var(--primary-dark); color: white; border-radius: 40px; padding: 0.8rem 2.5rem; border: none; font-weight: 700; transition: all 0.3s; }
+        .btn-search:hover { background: var(--accent-pink); padding-left: 3rem; }
+
+        .fav-nav { position: absolute; top: 20px; right: 20px; z-index: 100; }
+
+        footer {
+            position: absolute;
+            bottom: 25px;
+            z-index: 10;
+            color: white;
+            text-align: center;
+            width: 100%;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            pointer-events: none; /* لضمان عدم تداخل التذييل مع الماوس */
+        }
+        footer i { color: #ff4d4d; margin: 0 6px; animation: heartBeat 1.5s infinite; display: inline-block; }
+        @keyframes heartBeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+    </style>
+</head>
+<body>
+    <div class="fav-nav">
+        <a href="/favorites" class="btn btn-light rounded-pill shadow-sm px-4 fw-bold">
+            المفضلة <i class="fa-solid fa-heart text-danger me-2"></i>
+        </a>
+    </div>
+
+    <div class="floating-icons" id="bg-icons"></div>
+    
+    <div class="search-card shadow-lg">
+        <div class="main-icon"><i class="fa-solid fa-feather-pointed"></i></div>
+        <h1>محرك البحث في الشعر العربي</h1>
+        <div class="typewriter" id="typewriter-text"></div>
+        <form action="/results-page" method="GET" class="search-box">
+            <input type="text" name="q" class="form-control" placeholder="ابحث بالمعنى أو الموضوع..." required>
+            <button class="btn btn-search" type="submit">بحث <i class="fa-solid fa-magnifying-glass me-2"></i></button>
+        </form>
+    </div>
+
+    <footer>
+        صُنع بكل حب <i class="fa-solid fa-heart"></i> من محبي الأدب العربي
+    </footer>
+
+    <script>
+        // توليد الأيقونات العائمة
+        const iconTypes = ['fa-feather', 'fa-pen-nib', 'fa-scroll', 'fa-ink-well'];
+        const container = document.getElementById('bg-icons');
+        for(let i=0; i<15; i++) {
+            const icon = document.createElement('i');
+            icon.className = `fa-solid ${iconTypes[Math.floor(Math.random()*iconTypes.length)]}`;
+            icon.style.left = Math.random() * 100 + 'vw';
+            icon.style.animationDuration = (Math.random() * 10 + 15) + 's';
+            icon.style.animationDelay = (Math.random() * 5) + 's';
+            icon.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+            container.appendChild(icon);
+        }
+
+        // تأثير البارالكس (تفاعل الأيقونات مع الماوس)
+        document.addEventListener('mousemove', (e) => {
+            const icons = document.querySelectorAll('.floating-icons i');
+            const x = (e.clientX / window.innerWidth) - 0.5;
+            const y = (e.clientY / window.innerHeight) - 0.5;
+            icons.forEach(icon => {
+                const s = parseFloat(icon.style.fontSize) * 12;
+                icon.style.transform = `translate(${x * s}px, ${y * s}px)`;
+            });
+        });
+
+        // تأثير الكتابة الآلية
+        const phrases = ["ابحث عن الكرم والشجاعة...", "اكتشف قصائد الحب والوفاء...", "نقب في دواوين العرب بذكاء..."];
+        let i = 0, j = 0, isDeleting = false;
+        function type() {
+            const current = i % phrases.length;
+            const fullText = phrases[current];
+            document.getElementById('typewriter-text').innerHTML = fullText.substring(0, j + (isDeleting ? -1 : 1));
+            j += isDeleting ? -1 : 1;
+            if (!isDeleting && j === fullText.length) { isDeleting = true; setTimeout(type, 2000); }
+            else if (isDeleting && j === 0) { isDeleting = false; i++; setTimeout(type, 500); }
+            else setTimeout(type, isDeleting ? 50 : 100);
+        }
+        type();
+    </script>
+</body>
+</html>
