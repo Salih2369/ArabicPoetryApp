@@ -9,27 +9,64 @@
     <title>النتائج | درر المعاني</title>
     <style>
         :root { --primary-dark: #2c3e50; --accent-gold: #ffd700; --poetic-font: 'Amiri', serif; }
-        body { background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); background-size: 400% 400%; animation: gradientBG 15s ease infinite; min-height: 100vh; font-family: 'Cairo', sans-serif; overflow-x: hidden; }
+        body { 
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); 
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite; 
+            min-height: 100vh; font-family: 'Cairo', sans-serif; overflow-x: hidden; 
+        }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        .header-nav { background: rgba(44, 62, 80, 0.95); backdrop-filter: blur(10px); padding: 1.2rem 0; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--accent-gold); }
-        .verse-card { background: rgba(255,255,255,0.95); border: none; border-radius: 25px; margin-bottom: 3rem; transition: 0.3s; opacity: 0; transform: translateY(30px); }
+        
+        .header-nav { 
+            background: rgba(44, 62, 80, 0.95); backdrop-filter: blur(10px); 
+            padding: 1.2rem 0; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--accent-gold); 
+        }
+
+        /* --- تأثير الهوفر المطور للبطاقة --- */
+        .verse-card { 
+            background: rgba(255,255,255,0.95); border: none; border-radius: 25px; 
+            margin-bottom: 3rem; opacity: 0; transform: translateY(30px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer;
+        }
         .verse-card.show { opacity: 1; transform: translateY(0); }
-        .verse-text { font-family: var(--poetic-font); font-size: 2.2rem; color: #1a252f; padding: 1.5rem; line-height: 1.8; }
-        .stars-container { display: inline-flex; align-items: center; gap: 5px; background: #f8f9fa; padding: 0.5rem 1.2rem; border-radius: 50px; border: 1px solid #eee; }
-        .btn-action { background: white; border: 1.5px solid #dee2e6; border-radius: 50px; padding: 0.5rem 1.5rem; transition: 0.3s; font-weight: 600; }
-        .btn-action:hover { background: var(--primary-dark); color: white; }
+        
+        .verse-card:hover { 
+            transform: translateY(-15px) scale(1.02); /* ترتفع وتكبر قليلاً */
+            box-shadow: 0 40px 80px rgba(0,0,0,0.3); /* ظل أعمق وأفخم */
+            background: #ffffff; 
+        }
+
+        .verse-text { font-family: var(--poetic-font); font-size: 2.2rem; color: #1a252f; padding: 1.5rem; line-height: 1.8; transition: 0.3s; }
+        .verse-card:hover .verse-text { color: #000; }
+
+        .stars-container { 
+            display: inline-flex; align-items: center; gap: 5px; background: #f8f9fa; 
+            padding: 0.5rem 1.2rem; border-radius: 50px; border: 1px solid #eee; transition: 0.3s;
+        }
+        .verse-card:hover .stars-container { background: #fff; border-color: var(--accent-gold); }
+
+        .btn-action { 
+            background: white; border: 1.5px solid #dee2e6; border-radius: 50px; 
+            padding: 0.5rem 1.5rem; transition: 0.3s; font-weight: 600; 
+        }
+        .btn-action:hover { background: var(--primary-dark); color: white; border-color: var(--primary-dark); }
+        
+        .toast-copy { position: fixed; bottom: 30px; right: 30px; background: #1a252f; color: white; padding: 15px 30px; border-radius: 50px; display: none; z-index: 1000; }
     </style>
 </head>
 <body>
+    <div id="toast" class="toast-copy">تمت العملية بنجاح ✨</div>
     <header class="header-nav"><div class="container d-flex justify-content-between align-items-center">
-        <a href="/" class="btn btn-outline-light rounded-pill px-4">الرئيسية</a>
-        <h4 id="query-title" class="text-white m-0 fw-bold">تحليل الأبيات...</h4>
+        <a href="/" class="btn btn-outline-light rounded-pill px-4"><i class="fa-solid fa-arrow-right me-2"></i> الرئيسية</a>
+        <h4 id="query-title" class="text-white m-0 fw-bold">نتائج البحث</h4>
         <div style="width: 100px"></div>
     </div></header>
+
     <div class="container mt-5 pb-5"><div id="results-container" class="row justify-content-center"></div></div>
+
     <script>
         const query = new URLSearchParams(window.location.search).get('q');
         document.getElementById('query-title').innerText = `البحث عن: ${query}`;
+
         fetch(`/api/search?q=${encodeURIComponent(query)}`)
             .then(res => res.json()).then(data => {
                 const container = document.getElementById('results-container');
@@ -38,7 +75,9 @@
                     const score = item.score * 10;
                     let starsCount = score >= 90 ? 5 : score >= 80 ? 4 : score >= 70 ? 3 : score >= 50 ? 2 : 1;
                     let starsHTML = '';
-                    for (let s = 0; s < 5; s++) { starsHTML += `<i class="fa-${s < starsCount ? 'solid' : 'regular'} fa-star text-warning"></i>`; }
+                    for (let s = 0; s < 5; s++) {
+                        starsHTML += `<i class="fa-${s < starsCount ? 'solid' : 'regular'} fa-star text-warning"></i>`;
+                    }
                     const card = document.createElement('div');
                     card.className = 'col-md-11';
                     card.innerHTML = `
@@ -50,17 +89,31 @@
                                     ${starsHTML}
                                 </div>
                                 <button class="btn-action shadow-sm" onclick="copyV('${index}')">نسخ البيت</button>
-                                <button class="btn btn-outline-danger rounded-pill px-4" onclick="toggleFav('${item.verse.replace(/'/g, "\\'")}')">المفضلة ❤️</button>
+                                <button class="btn btn-outline-danger rounded-pill px-4" onclick="toggleFav('${item.verse.replace(/'/g, "\\'")}')">
+                                    <i class="fa-regular fa-heart"></i> المفضلة
+                                </button>
                             </div>
                         </div></div>`;
                     container.appendChild(card);
                     setTimeout(() => card.querySelector('.verse-card').classList.add('show'), index * 100);
                 });
             });
-        function copyV(id) { navigator.clipboard.writeText(document.getElementById(`v-${id}`).innerText); alert("تم النسخ 📋"); }
+
+        function copyV(id) { 
+            navigator.clipboard.writeText(document.getElementById(`v-${id}`).innerText); 
+            showT("تم النسخ بنجاح 📋"); 
+        }
         function toggleFav(v) {
             let favs = JSON.parse(localStorage.getItem('poetic_favs') || '[]');
-            if(!favs.includes(v)) { favs.push(v); localStorage.setItem('poetic_favs', JSON.stringify(favs)); alert("أضيف للمفضلة ❤️"); }
+            if(!favs.includes(v)) { 
+                favs.push(v); 
+                localStorage.setItem('poetic_favs', JSON.stringify(favs)); 
+                showT("أضيف للمفضلة ❤️"); 
+            } else { showT("موجود مسبقاً ⚠️"); }
+        }
+        function showT(m) { 
+            const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; 
+            setTimeout(() => t.style.display = 'none', 2000); 
         }
     </script>
 </body>
